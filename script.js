@@ -1,55 +1,27 @@
-document
-  .getElementById("installment-form")
-  .addEventListener("submit", function (e) {
+document.getElementById("installment-form").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    // Get input values
-    const amount = parseFloat(document.getElementById("amount").value); // Total amount
-    const cashPayment = parseFloat(
-      document.getElementById("cash-payment").value
-    ); // Cash payment
-    const months = parseInt(
-      document.getElementById("installment-months").value
-    ); // Installment months
+    const totalAmount = parseFloat(document.getElementById("amount").value);
+    const cashPayment = parseFloat(document.getElementById("cash-payment").value);
+    const remainingAmount = totalAmount - cashPayment;
+    const months = parseInt(document.getElementById("installment-months").value);
 
-    // Validate inputs
-    if (isNaN(amount) || amount <= 0 || isNaN(cashPayment) || cashPayment < 0) {
-      alert("Please enter valid amounts.");
-      return;
-    }
+    const installmentRates = {
+        2: 0.08,
+        3: 0.10,
+        4: 0.15,
+        5: 0.20,
+        6: 0.25
+    };
 
-    // Calculate the remaining amount (total amount - cash payment)
-    const remainingAmount = amount - cashPayment;
-
-    // Calculate the benefit based on the number of months
     const percentage = installmentRates[months];
     const benefit = remainingAmount * percentage;
+    const totalAmountWithBenefit = remainingAmount + benefit;
+    const monthlyPayment = totalAmountWithBenefit / months;
 
-    // Calculate total amount with benefit
-    const totalAmount = amount + benefit;
-
-    // Calculate the monthly payment
-    const monthlyPayment = remainingAmount / months;
-
-    // Update the remaining amount field
-    document.getElementById("remaining-amount").value = remainingAmount.toFixed(
-      2
-    );
-
-    // Update result section
-    document.getElementById(
-      "total-amount"
-    ).textContent = `Total Amount: $${totalAmount.toFixed(2)}`;
-    document.getElementById(
-      "cash-paid"
-    ).textContent = `Cash Payment: $${cashPayment.toFixed(2)}`;
-    document.getElementById(
-      "remaining-amount-result"
-    ).textContent = `Remaining Amount: $${remainingAmount.toFixed(2)}`;
-    document.getElementById(
-      "monthly-payment"
-    ).textContent = `Monthly Payment: $${monthlyPayment.toFixed(2)}`;
-    document.getElementById(
-      "benefit"
-    ).textContent = `Benefit: $${benefit.toFixed(2)}`;
-  });
+    document.getElementById("total-amount").innerText = `Total Amount: $${totalAmount.toFixed(2)}`;
+    document.getElementById("cash-paid").innerText = `Cash Payment: $${cashPayment.toFixed(2)}`;
+    document.getElementById("remaining-amount-result").innerText = `Remaining Amount: $${remainingAmount.toFixed(2)}`;
+    document.getElementById("monthly-payment").innerText = `Monthly Payment: $${monthlyPayment.toFixed(2)}`;
+    document.getElementById("benefit").innerText = `Benefit: $${benefit.toFixed(2)}`;
+});
