@@ -1,59 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impact Mastery - Installment Calculator</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <header class="main-header">
-            <h1>Impact Mastery</h1>
-            <p>Your All-in-One Installment Calculator</p>
-        </header>
+document
+  .getElementById("installment-form")
+  .addEventListener("submit", function (e) {
+    e.preventDefault();
 
-        <div class="form-container">
-            <section class="form-section">
-                <header><h2>Installment Calculation</h2></header>
-                <form id="installment-form">
-                    <label for="amount">Enter Total Amount ($):</label>
-                    <input type="number" id="amount" required placeholder="Enter total amount in USD">
+    // Get input values
+    const amount = parseFloat(document.getElementById("amount").value); // Total amount
+    const cashPayment = parseFloat(
+      document.getElementById("cash-payment").value
+    ); // Cash payment
+    const months = parseInt(
+      document.getElementById("installment-months").value
+    ); // Installment months
 
-                    <label for="cash-payment">Enter Cash Payment ($):</label>
-                    <input type="number" id="cash-payment" required placeholder="Enter cash payment">
+    // Validate inputs
+    if (isNaN(amount) || amount <= 0 || isNaN(cashPayment) || cashPayment < 0) {
+      alert("Please enter valid amounts.");
+      return;
+    }
 
-                    <label for="remaining-amount">Remaining Amount ($):</label>
-                    <input type="number" id="remaining-amount" disabled placeholder="Remaining amount">
+    // Calculate the remaining amount (total amount - cash payment)
+    const remainingAmount = amount - cashPayment;
 
-                    <label for="installment-months">Select Installment Months:</label>
-                    <select id="installment-months">
-                        <option value="2">2 Months</option>
-                        <option value="3">3 Months</option>
-                        <option value="4">4 Months</option>
-                        <option value="5">5 Months</option>
-                        <option value="6">6 Months</option>
-                    </select>
+    // Calculate the benefit based on the number of months
+    const percentage = installmentRates[months];
+    const benefit = remainingAmount * percentage;
 
-                    <button type="submit">Calculate Installment</button>
-                </form>
-            </section>
+    // Calculate total amount with benefit
+    const totalAmount = amount + benefit;
 
-            <section class="result-section">
-                <header><h3>Installment Breakdown</h3></header>
-                <p id="total-amount">Total Amount: $0</p>
-                <p id="cash-paid">Cash Payment: $0</p>
-                <p id="remaining-amount-result">Remaining Amount: $0</p>
-                <p id="monthly-payment">Monthly Payment: $0</p>
-                <p id="benefit">Benefit: $0</p>
-            </section>
+    // Calculate the monthly payment
+    const monthlyPayment = remainingAmount / months;
 
-            <section class="export-section">
-                <button id="export-button">Export to PDF</button>
-            </section>
-        </div>
-    </div>
+    // Update the remaining amount field
+    document.getElementById("remaining-amount").value = remainingAmount.toFixed(
+      2
+    );
 
-    <script src="script.js"></script>
-</body>
-</html>
+    // Update result section
+    document.getElementById(
+      "total-amount"
+    ).textContent = `Total Amount: $${totalAmount.toFixed(2)}`;
+    document.getElementById(
+      "cash-paid"
+    ).textContent = `Cash Payment: $${cashPayment.toFixed(2)}`;
+    document.getElementById(
+      "remaining-amount-result"
+    ).textContent = `Remaining Amount: $${remainingAmount.toFixed(2)}`;
+    document.getElementById(
+      "monthly-payment"
+    ).textContent = `Monthly Payment: $${monthlyPayment.toFixed(2)}`;
+    document.getElementById(
+      "benefit"
+    ).textContent = `Benefit: $${benefit.toFixed(2)}`;
+  });
