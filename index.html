@@ -1,159 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Impact Mastery - Installment Calculator</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Mastery - Installment Calculator</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <div class="container">
-    <!-- Main Header -->
-    <header class="main-header">
-      <h1>Impact Mastery</h1>
-      <p>Your All-in-One Installment Calculator</p>
-    </header>
-
-    <!-- Form Container -->
-    <div class="form-container">
-      <!-- Installment Calculation Section -->
-      <section class="form-section">
-        <header>
-          <h2>Installment Calculation</h2>
+    <div class="container">
+        <header class="main-header">
+            <h1>Impact Mastery</h1>
+            <p>Your All-in-One Installment Calculator</p>
         </header>
-        <form id="installment-form">
-          <!-- Client Details Section -->
-          <h3>Client Details</h3>
-          <label for="client-name">Client Name:</label>
-          <input type="text" id="client-name" required placeholder="Enter client name">
 
-          <label for="client-phone">Client Phone Number:</label>
-          <input type="text" id="client-phone" required placeholder="Enter client phone number">
+        <div class="form-container">
+            <section class="form-section">
+                <header><h2>Installment Calculation</h2></header>
+                <form id="installment-form">
+                    <label for="amount">Enter Total Amount ($):</label>
+                    <input type="number" id="amount" required placeholder="Enter total amount in USD">
 
-          <label for="sales-name">Salesperson Name:</label>
-          <input type="text" id="sales-name" required placeholder="Enter salesperson name">
+                    <label for="cash-payment">Enter Cash Payment ($):</label>
+                    <input type="number" id="cash-payment" required placeholder="Enter cash payment">
 
-          <label for="sales-phone">Salesperson Phone Number:</label>
-          <input type="text" id="sales-phone" required placeholder="Enter salesperson phone number">
+                    <label for="remaining-amount">Remaining Amount ($):</label>
+                    <input type="number" id="remaining-amount" disabled placeholder="Remaining amount">
 
-          <!-- Installment Details Section -->
-          <h3>Installment Details</h3>
-          <label for="amount">Enter Total Amount ($):</label>
-          <input type="number" id="amount" required placeholder="Enter total amount in USD">
+                    <label for="installment-months">Select Installment Months:</label>
+                    <select id="installment-months">
+                        <option value="2">2 Months</option>
+                        <option value="3">3 Months</option>
+                        <option value="4">4 Months</option>
+                        <option value="5">5 Months</option>
+                        <option value="6">6 Months</option>
+                    </select>
 
-          <label for="cash-payment">Enter Cash Payment ($):</label>
-          <input type="number" id="cash-payment" required placeholder="Enter cash payment">
+                    <button type="submit">Calculate Installment</button>
+                </form>
+            </section>
 
-          <label for="remaining-amount">Remaining Amount ($):</label>
-          <input type="number" id="remaining-amount" disabled placeholder="Remaining amount">
+            <section class="result-section">
+                <header><h3>Installment Breakdown</h3></header>
+                <p id="total-amount">Total Amount: $0</p>
+                <p id="cash-paid">Cash Payment: $0</p>
+                <p id="remaining-amount-result">Remaining Amount: $0</p>
+                <p id="monthly-payment">Monthly Payment: $0</p>
+                <p id="benefit">Benefit: $0</p>
+            </section>
 
-          <label for="installment-months">Select Installment Months:</label>
-          <select id="installment-months">
-            <option value="2">2 Months</option>
-            <option value="3">3 Months</option>
-            <option value="4">4 Months</option>
-            <option value="5">5 Months</option>
-            <option value="6">6 Months</option>
-          </select>
-
-          <button type="submit">Calculate Installment</button>
-        </form>
-      </section>
-
-      <!-- Installment Results Section -->
-      <section class="result-section">
-        <header>
-          <h3>Installment Breakdown</h3>
-        </header>
-        <p id="total-amount">Total Amount: $0</p>
-        <p id="cash-paid">Cash Payment: $0</p>
-        <p id="remaining-amount-result">Remaining Amount: $0</p>
-        <p id="monthly-payment">Monthly Payment: $0</p>
-        <p id="benefit">Benefit: $0</p>
-      </section>
-
-      <!-- Export Section -->
-      <section class="export-section">
-        <button id="export-button">Export to PDF</button>
-      </section>
+            <section class="export-section">
+                <button id="export-button">Export to PDF</button>
+            </section>
+        </div>
     </div>
-  </div>
 
-  <!-- Add jsPDF library at the end of the body -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <script>
-    // Define the installment rates for each number of months
-    const installmentRates = {
-      2: 0.08, // 8% for 2 months
-      3: 0.10, // 10% for 3 months
-      4: 0.12, // 12% for 4 months
-      5: 0.15, // 15% for 5 months
-      6: 0.18 // 18% for 6 months
-    };
-    // Function to update the Remaining Amount field
-    function updateRemainingAmount() {
-      const amount = parseFloat(document.getElementById("amount").value);
-      const cashPayment = parseFloat(document.getElementById("cash-payment").value);
-      const remainingAmount = amount - cashPayment;
-      document.getElementById("remaining-amount").value = remainingAmount > 0 ? remainingAmount.toFixed(2) : 0;
-    }
-    // Add event listeners for both the "amount" and "cash-payment" fields
-    document.getElementById("amount").addEventListener("input", updateRemainingAmount);
-    document.getElementById("cash-payment").addEventListener("input", updateRemainingAmount);
-    // Calculate installment when the form is submitted
-    document.getElementById("installment-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const amount = parseFloat(document.getElementById("amount").value);
-      const cashPayment = parseFloat(document.getElementById("cash-payment").value);
-      const months = parseInt(document.getElementById("installment-months").value);
-      if (isNaN(amount) || isNaN(cashPayment) || cashPayment < 0) {
-        alert("Please enter valid amounts.");
-        return;
-      }
-      const remainingAmount = amount - cashPayment;
-      const benefit = remainingAmount * installmentRates[months]; // Use the correct rate based on the months
-      const totalAmount = amount + benefit;
-      const monthlyPayment = remainingAmount / months;
-      document.getElementById("total-amount").textContent = `Total Amount: $${totalAmount.toFixed(2)}`;
-      document.getElementById("cash-paid").textContent = `Cash Payment: $${cashPayment.toFixed(2)}`;
-      document.getElementById("remaining-amount-result").textContent = `Remaining Amount: $${remainingAmount.toFixed(2)}`;
-      document.getElementById("monthly-payment").textContent = `Monthly Payment: $${monthlyPayment.toFixed(2)}`;
-      document.getElementById("benefit").textContent = `Benefit: $${benefit.toFixed(2)}`;
-    });
-    // Export to PDF function (using jsPDF library)
-    const jsPDF = window.jspdf.jsPDF;
-    document.getElementById("export-button").addEventListener("click", function() {
-      const doc = new jsPDF();
-      // Title in the center
-      doc.setFontSize(32);
-      doc.setTextColor(255, 255, 255); // White color for text
-      doc.setFillColor(0, 121, 107); // Blue background for header
-      doc.rect(0, 0, 210, 30, 'F'); // Fill header with blue color
-      doc.text('Impact Mastery - Installment Breakdown', 105, 20, null, null, 'center');
-      // Client and Salesperson Details
-      doc.setFontSize(16);
-      doc.setTextColor(0, 0, 0); // Black color
-      doc.text(`Client Name: ${document.getElementById("client-name").value}`, 20, 40);
-      doc.text(`Client Phone: ${document.getElementById("client-phone").value}`, 20, 50);
-      doc.text(`Salesperson Name: ${document.getElementById("sales-name").value}`, 20, 60);
-      doc.text(`Salesperson Phone: ${document.getElementById("sales-phone").value}`, 20, 70);
-      // Installment Breakdown
-      doc.text(`Total Amount: $${document.getElementById("total-amount").textContent.split(': ')[1]}`, 20, 90);
-      doc.text(`Cash Payment: $${document.getElementById("cash-paid").textContent.split(': ')[1]}`, 20, 100);
-      doc.text(`Remaining Amount: $${document.getElementById("remaining-amount-result").textContent.split(': ')[1]}`, 20, 110);
-      doc.text(`Monthly Payment: $${document.getElementById("monthly-payment").textContent.split(': ')[1]}`, 20, 120);
-      doc.text(`Benefit: $${document.getElementById("benefit").textContent.split(': ')[1]}`, 20, 130);
-      // Footer
-      doc.setFontSize(12);
-      doc.setTextColor(85, 85, 85); // Grey color
-      doc.text('Impact Mastery - Your All-in-One Financial Calculator', 105, 270, null, null, 'center');
-      // Save the PDF
-      doc.save('installment_breakdown.pdf');
-    });
-  </script>
+    <script src="script.js"></script>
 </body>
-
 </html>
